@@ -1,5 +1,7 @@
 package com.playblack.logblock.ds;
 
+import com.playblack.logblock.blocks.IBlock;
+import com.playblack.mcutils.PlayerWrapper;
 import com.playblack.mcutils.Vector;
 
 
@@ -13,7 +15,7 @@ public interface IDataSource {
 	 * @param world
 	 * @return IResultObject
 	 */
-	public IResultObject areaBlockSearch(String player, Vector origin, int size, int world);
+	public IResultObject areaBlockSearch(PlayerWrapper player, Vector origin, int size, int world, IBlock block);
 	
 	/**
 	 * Returns an IResultObject containing a summary of how many blocks have been destroyed and created by what players
@@ -32,7 +34,7 @@ public interface IDataSource {
 	 * @param player
 	 * @return IResultObject
 	 */
-	public IResultObject areaPlayerStats(Vector origin, int size, int world, String player);
+	public IResultObject areaPlayerStats(Vector origin, int size, int world, PlayerWrapper player);
 	
 	/**
 	 * Returns an IResultObject containing a summary of created/destroyed blocks for all players in a world
