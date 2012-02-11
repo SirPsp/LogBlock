@@ -4,53 +4,56 @@ import com.playblack.logblock.blocks.IBlock;
 import com.playblack.mcutils.PlayerWrapper;
 import com.playblack.mcutils.Vector;
 
-
+/**
+ * This is an interface for data source objects to unify them
+ * on the front-end side of the code
+ * @author Chris
+ *
+ */
 public interface IDataSource {
 	
 	/**
-	 * Returns an IResultObject containing blocks of "type" changed by "player" within the x,y,z bounds of Vector + size in world.
+	 * Executes a new area block search operation
 	 * @param player
+	 * @param size
+	 * @param world
+	 * @param block
+	 */
+	public void areaBlockSearch(PlayerWrapper player, int size, int world, IBlock block);
+	
+	/**
+	 * Executes a new general area stats operation
 	 * @param origin
 	 * @param size
 	 * @param world
-	 * @return IResultObject
 	 */
-	public IResultObject areaBlockSearch(PlayerWrapper player, Vector origin, int size, int world, IBlock block);
+	public void areaStats(PlayerWrapper player, int size, int world);
 	
 	/**
-	 * Returns an IResultObject containing a summary of how many blocks have been destroyed and created by what players
-	 * @param origin
-	 * @param size
-	 * @param world
-	 * @return IResultObject
-	 */
-	public IResultObject areaStats(Vector origin, int size, int world);
-	
-	/**
-	 * Returns an IResultObject containing a summary of how many blocks have been destroyed and created by a certain player
-	 * @param origin
+	 * Executes a new stats operation specific to a player
 	 * @param size
 	 * @param world
 	 * @param player
-	 * @return IResultObject
 	 */
-	public IResultObject areaPlayerStats(Vector origin, int size, int world, PlayerWrapper player);
+	public void areaPlayerStats(int size, int world, PlayerWrapper player, String playerName);
 	
 	/**
-	 * Returns an IResultObject containing a summary of created/destroyed blocks for all players in a world
+	 * Executes a new stats operation listing statistics for all blocks in a world
 	 * @param world
-	 * @return IResultObject
 	 */
-	public IResultObject worldBlockStats(int world);
+	public void worldBlockStats(int world, PlayerWrapper player);
 	
 	/**
-	 * Returns an IResultObject containing the last x points of history of this block position this block
+	 * Executes a new block history listing operation
 	 * @param v
 	 * @param world
 	 * @param limit
-	 * @return IResultObject
 	 */
-	public IResultObject getBlockHistory(Vector v, int world, int limit);
+	public void getBlockHistory(PlayerWrapper player, Vector v, int world, int limit);
 	
-	public void processBlockList();
+	/**
+	 * Takes a list of blocks and dumps them into the database
+	 * TODO: Add block list object etc
+	 */
+	public void processBlockList(int delay, int limit);
 }

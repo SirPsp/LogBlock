@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 public class PlayerWrapper {
 	Object player;
 	Logger log;
-	Object[] voidObject = new Object[0];
 	/**
 	 * Default constructor, we always need a log
 	 */
@@ -85,7 +84,7 @@ public class PlayerWrapper {
 	 */
 	public String getName() {
 		try {
-			return (String) player.getClass().getMethod("getName", (Class<?>)null).invoke(player, voidObject);
+			return (String) player.getClass().getMethod("getName", (Class<?>)null).invoke(player, (Object[])null);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -105,18 +104,13 @@ public class PlayerWrapper {
 	}
 	
 	/**
-	 * Returns player location as vector or null if somethign went wrong
-	 * @return
+	 * Notify the wrapped player with the given message.<br>
+	 * Notifying makes the message red!
+	 * @param msg
 	 */
-	public Vector getLocation() {
-		Vector v = null;
+	public void notify(String message) {
 		try {
-			int x = (Integer) player.getClass().getMethod("getX", (Class<?>)null).invoke(player, voidObject);
-			int y = (Integer) player.getClass().getMethod("getY", (Class<?>)null).invoke(player, voidObject);
-			int z = (Integer) player.getClass().getMethod("getZ", (Class<?>)null).invoke(player, voidObject);
-			
-			v = new Vector(x,y,z);
-			
+			player.getClass().getMethod("notify", String.class).invoke(player, message);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -130,6 +124,36 @@ public class PlayerWrapper {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			log.log(Level.INFO, "LogBlock: NoSuchMethodException in PlayerWrapper: "+e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns player location as vector or null if something went wrong
+	 * @return
+	 */
+	public Vector getLocation() {
+		Vector v = null;
+		try {
+			int x = (Integer) player.getClass().getMethod("getX", (Class<?>)null).invoke(player, (Object[])null);
+			int y = (Integer) player.getClass().getMethod("getY", (Class<?>)null).invoke(player, (Object[])null);
+			int z = (Integer) player.getClass().getMethod("getZ", (Class<?>)null).invoke(player, (Object[])null);
+			
+			v = new Vector(x,y,z);
+			
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			log.log(Level.INFO, "LogBlock: SecurityException in PlayerWrapper(What the devil were you doing???): "+e.getMessage());
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			log.log(Level.INFO, "LogBlock: IllegalAccessException in PlayerWrapper(What the devil were you doing???): "+e.getMessage());
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			log.log(Level.INFO, "LogBlock: InvocationTargetException in PlayerWrapper(Player gone?): "+e.getMessage());
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			log.log(Level.INFO, "LogBlock: NoSuchMethodException in PlayerWrapper(What the devil were you doing???): "+e.getMessage());
 			e.printStackTrace();
 		}
 		return v;
