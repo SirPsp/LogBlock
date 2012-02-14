@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.playblack.logblock.utils.CanaryConnectionWrapper;
+
 /**
  * Disclaimer:
  * Code is taken out of the JDBC Pool plugin package by bootswithdefer aka Jesse DeFer.
@@ -21,7 +23,14 @@ public class ConnectionService {
   final private long timeout = 60000;
   private ConnectionReaper reaper;
   final private int poolsize = 10;
+  private CanaryConnectionWrapper ccw = null;
 
+  /**
+   * Native connection pool constructor
+   * @param url
+   * @param user
+   * @param password
+   */
   public ConnectionService(String url, String user, String password) {
     this.url = url;
     this.user = user;
@@ -29,6 +38,14 @@ public class ConnectionService {
     connections = new Vector<JDCConnection>(poolsize);
     reaper = new ConnectionReaper(this);
     reaper.start();
+  }
+  
+  /**
+   * Canarymod connection constructor
+   * @param ccw
+   */
+  public ConnectionService(CanaryConnectionWrapper ccw) {
+	  this.ccw = ccw;
   }
 
   public synchronized void reapConnections() {
@@ -58,21 +75,24 @@ public class ConnectionService {
   }
 
   public synchronized Connection getConnection() throws SQLException {
-    JDCConnection c;
+	  if(this.ccw == null) {
+		  JDCConnection c;
+		  for (int i = 0; i < connections.size(); i++) {
+			  c = connections.elementAt(i);
+			  if (c.lease()) {
+				  return c;
+			  }
+		  }
 
-    for (int i = 0; i < connections.size(); i++) {
-      c = connections.elementAt(i);
-      if (c.lease()) {
-        return c;
-      }
-    }
-
-    Connection conn = DriverManager.getConnection(url, user, password);
-    c = new JDCConnection(conn, this);
-    c.lease();
-    connections.addElement(c);
-
-    return c.getConnection();
+	    Connection conn = DriverManager.getConnection(url, user, password);
+	    c = new JDCConnection(conn, this);
+	    c.lease();
+	    connections.addElement(c);
+	    return c.getConnection();
+	  }
+	  else {
+		  return ccw.getConnection();
+	  }
   }
 
   public synchronized void returnConnection(JDCConnection conn) {

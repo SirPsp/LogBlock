@@ -10,6 +10,8 @@ public class LogBlockConfig {
 	private int removeToolId;
 	private int toolId;
 	private boolean useCanaryDb;
+	private boolean debug;
+	private int delay;
 	
 	/**
 	 * Get the db driver name
@@ -152,5 +154,37 @@ public class LogBlockConfig {
 	 */
 	public void setUseCanaryDb(boolean useCanaryDb) {
 		this.useCanaryDb = useCanaryDb;
+	}
+	
+	/**
+	 * Is debugging on?
+	 * @return
+	 */
+	public boolean isDebug() {
+		return debug;
+	}
+	
+	/**
+	 * Set if debugging is on
+	 * @param debug
+	 */
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+	
+	/**
+	 * Get consumer delay
+	 * @return
+	 */
+	public int getDelay() {
+		return delay;
+	}
+	
+	/**
+	 * Set consumer delay
+	 * @param delay
+	 */
+	public void setDelay(int delay) {
+		this.delay = delay;
 	}
 }

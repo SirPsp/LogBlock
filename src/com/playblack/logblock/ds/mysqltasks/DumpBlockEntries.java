@@ -50,7 +50,7 @@ public class DumpBlockEntries implements Runnable {
 					ps.setString(1, b.player);
 					ps.setInt(2, b.oldBlock.getType());
 					ps.setInt(3, b.newBlock.getType());
-					ps.setInt(4, b.newBlock.getType());
+					ps.setInt(4, b.newBlock.getData());
 					ps.setInt(5, b.position.getBlockX());
 					ps.setInt(6, b.position.getBlockY());
 					ps.setInt(7, b.position.getBlockZ());

@@ -5,6 +5,18 @@ public class WorldBlock implements IBlock {
 	private byte data=0;
 	private int type=0;
 	private int world=0; //default
+	public WorldBlock(int type, int data, int world) {
+		this.type = type;
+		this.data = (byte)data;
+		this.world = world;
+	}
+	
+	public WorldBlock(int type, int data) {
+		this.type = type;
+		this.data = (byte)data;
+	}
+	
+	
 	@Override
 	public byte getData() {
 		return data;

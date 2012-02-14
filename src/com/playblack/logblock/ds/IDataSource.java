@@ -1,5 +1,7 @@
 package com.playblack.logblock.ds;
 
+import java.sql.Connection;
+
 import com.playblack.logblock.blocks.IBlock;
 import com.playblack.mcutils.PlayerWrapper;
 import com.playblack.mcutils.Vector;
@@ -56,4 +58,25 @@ public interface IDataSource {
 	 * TODO: Add block list object etc
 	 */
 	public void processBlockList(int delay, int limit);
+	
+	/**
+	 * Add a block to the block queue.
+	 * @param player The name of the player who made the action
+	 * @param oldBlock
+	 * @param newBlock
+	 */
+	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock, Vector position);
+	
+	/**
+	 * This allows the execution of any runnable task with the thread manager to<br>
+	 * keep the threading clean.
+	 * @param r
+	 */
+	public void executeOther(Runnable r);
+	
+	/**
+	 * Returns a connection to use outside this manager
+	 * @return
+	 */
+	public Connection getConnection();
 }

@@ -15,8 +15,14 @@ public class BlockEntry {
 	public IBlock newBlock; //type
 	public IBlock oldBlock; //replaced
 	public Vector position;
-	public String extra; //Sign text et cetera
+	public String extra = null; //Sign text et cetera
 	
+	public BlockEntry(String player, IBlock newBlock, IBlock oldBlock, Vector position) {
+		this.player = player;
+		this.newBlock = newBlock;
+		this.oldBlock = oldBlock;
+		this.position = position;
+	}
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("BlockEntry for \n")

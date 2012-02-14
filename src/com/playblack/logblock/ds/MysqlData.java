@@ -1,5 +1,6 @@
 package com.playblack.logblock.ds;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -8,6 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
 import com.playblack.logblock.blocks.IBlock;
+import com.playblack.logblock.blocks.WorldBlock;
 import com.playblack.logblock.ds.mysqltasks.*;
 import com.playblack.logblock.ds.services.ConnectionService;
 import com.playblack.logblock.utils.BlockEntry;
@@ -159,7 +161,43 @@ public class MysqlData implements IDataSource {
 		}
 	}
 	
-	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock) {
+	@Override
+	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock, Vector position) {
+		if(oldBlock == null) {
+			oldBlock = new WorldBlock(0,0,0);
+		}
+		if(newBlock == null) {
+			//the fuck???
+			newBlock = new WorldBlock(0,0,0);
+		}
 		
+		BlockEntry be = new BlockEntry(player, newBlock, oldBlock, position);
+		if(blockList.offer(be)) {
+			
+		}
+		else {
+			//insanity!!!
+			log.warning("LogBlock: Failed to insert new Block " +
+					"Entry for player "+player+" (queue is full ... " +
+					"wtf man, that's crazy shit!)");
+		}
+	}
+	
+	@Override
+	public void executeOther(Runnable r) {
+		try {
+			threadPool.execute(r);
+		}
+		catch(RejectedExecutionException e) {
+			log.warning("LogBlock could not execute a non-standard task (ie. Rollback), Execution rejected."+e.getMessage());
+		}
+	}
+	
+	public Connection getConnection() {
+		try {
+			return connectionPool.getConnection();
+		} catch (SQLException e) {
+			return null;
+		}
 	}
 }
