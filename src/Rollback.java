@@ -25,11 +25,13 @@ public class Rollback implements Runnable {
 
 	Rollback(Connection conn, String name, int minutes) {
 		if(conn == null) {
-			throw new NullPointerException("Connection could not be established for Rollback of player "+name+"!");
+			throw new NullPointerException();
 		}
 		String query = "select type, replaced, damage, x, y, z, id, world from blocks where player = ? and date > date_sub(now(), interval ? minute) order by date desc";
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		currentBlocks = new HashMap<Vector, IBlock>();
+		recordedBlocks = new HashMap<Vector, IBlock>();
 
 		try {
 			conn.setAutoCommit(false);
@@ -40,33 +42,43 @@ public class Rollback implements Runnable {
 			//Lock this up
 			synchronized(lock) {
 				while (rs.next()) {
-					if(rs.getInt("replaced") == 61) {
+					Vector p = new Vector(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
+					int type  = rs.getInt("type");
+					int world = rs.getInt("world");
+					byte data = (byte)rs.getInt("damage");
+					
+					if(rs.getInt("replaced") == 63) {
 						
-						Vector p = new Vector(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
 						int bId = rs.getInt("id");
 						
-						WorldBlock bOriginal = new WorldBlock(rs.getInt("type"), 0, rs.getInt("world"));
+						//WorldBlock bOriginal = new WorldBlock(rs.getInt("type"), 0, rs.getInt("world"));
 						
-						SignBlock bReplaced = new SignBlock();
-						bReplaced.setWorld(rs.getInt("world"));
-						bReplaced.setData((byte)rs.getInt("damage")); //heading
+//						SignBlock bReplaced = new SignBlock();
+//						bReplaced.setWorld(rs.getInt("world"));
+//						bReplaced.setData((byte)rs.getInt("damage")); //heading
+//						
+//						bReplaced.setText(getSignContent(conn, bId));
 						
-						bReplaced.setText(getSignContent(conn, bId));
-						
-						currentBlocks.put(p, bOriginal);
-						recordedBlocks.put(p, bReplaced);
+						currentBlocks.put(p,
+								new WorldBlock(type, 0, world));
+						recordedBlocks.put(p,
+								new SignBlock(63, data, 
+										world, 
+										getSignContent(conn, bId)));
 					}
-					else {
-						Vector p = new Vector(rs.getInt("x"), rs.getInt("y"), rs.getInt("z"));
+					else {			
+//						WorldBlock bOriginal = new WorldBlock(rs.getInt("type"), 0, rs.getInt("world"));
+//						
+//						WorldBlock bReplaced = new WorldBlock(rs.getInt("replaced"),
+//								rs.getInt("damage"), 
+//								rs.getInt("world"));
 						
-						WorldBlock bOriginal = new WorldBlock(rs.getInt("type"), 0, rs.getInt("world"));
-						
-						WorldBlock bReplaced = new WorldBlock(rs.getInt("replaced"),
-								rs.getInt("damage"), 
-								rs.getInt("world"));
-						
-						currentBlocks.put(p, bOriginal);
-						recordedBlocks.put(p, bReplaced);
+						currentBlocks.put(p, 
+								new WorldBlock(type, 0, world));
+						recordedBlocks.put(p, 
+								new WorldBlock(rs.getInt("replaced"),
+										data, 
+										world));
 					}
 					//TODO: add chests
 				}
@@ -90,6 +102,10 @@ public class Rollback implements Runnable {
 	}
 
 	public int count() {
+//		System.out.println("CURRENT BLOCKS");
+//		System.out.println(currentBlocks.toString());
+//		System.out.println("RECORDED BLOCKS");
+//		System.out.println(recordedBlocks.toString());
 		return currentBlocks.size();
 	}
 	
@@ -133,15 +149,31 @@ public class Rollback implements Runnable {
 		preloadChunk(world, coords);
 		Block b = world.getBlockAt(coords.getBlockX(), coords.getBlockY(), coords.getBlockZ());
 
-        if(b.getType() == block.getType() && b.getData() == (Byte)block.getData()) {
+        if(b.getType() == block.getType() && b.getData() == block.getData()) {
         	return;
         }
         if(b.getType() != block.getType()) {
         	world.setBlockAt(block.getType(), coords.getBlockX(), coords.getBlockY(), coords.getBlockZ());
-        	if(b.getData() != (Byte)block.getData()) {
-        		world.setBlockData(coords.getBlockX(), coords.getBlockY(), coords.getBlockZ(), (Byte)block.getData());
+        	if(b.getData() != block.getData()) {
+        		world.setBlockData(coords.getBlockX(), coords.getBlockY(), coords.getBlockZ(), block.getData());
         	}
+        	//After setting it all
+        	if(block.getType() == 63) {
+            	try {
+            		Sign sign = (Sign)world.getComplexBlock(b);  	
+                	sign.setText(0, ((SignBlock)block).getAtLine(0));
+                	sign.setText(1, ((SignBlock)block).getAtLine(1));
+                	sign.setText(2, ((SignBlock)block).getAtLine(2));
+                	sign.setText(3, ((SignBlock)block).getAtLine(3));
+                	sign.getBlock().setData((byte)((SignBlock)block).getData());
+                	sign.update();
+            	}
+            	catch(ClassCastException e) {
+            		
+            	}
+            }	
         }
+        //TODO: Add chests
 	}
 	
 	
@@ -167,18 +199,14 @@ public class Rollback implements Runnable {
 			return false;
 		}	
 		synchronized (lock) {
-			World world;
-//			for(Vector v : blocks.getBlockListOriginal().keySet()) {
-//				world = etc.getServer().getWorld(blocks.getBlockListReplaced().get(v).getWorld());
-//				
-//				Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
-//				//if the block in world equals the block we recorded, change it back
-//				if(b.getType() == blocks.getBlockAtInOriginal(v).getType()) {
-//					changeBlock(blocks.getBlockListReplaced().get(v), v, world);
-//				}
-//			}
+			World world = null;
 			for(Vector v : currentBlocks.keySet()) {
-				world = etc.getServer().getWorld(currentBlocks.get(v).getWorld());
+				if(world == null) {
+					world = etc.getServer().getWorld(currentBlocks.get(v).getWorld());
+				}
+				else if(!world.equals(etc.getServer().getWorld(currentBlocks.get(v).getWorld()))) {
+					world = (etc.getServer().getWorld(currentBlocks.get(v).getWorld()));
+				}
 				Block b = world.getBlockAt(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 				if(b.getType() == currentBlocks.get(v).getType()) {
 					changeBlock(recordedBlocks.get(v), v, world);

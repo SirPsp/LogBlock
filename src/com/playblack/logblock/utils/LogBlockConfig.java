@@ -6,8 +6,9 @@ public class LogBlockConfig {
 	private String dbUrl;
 	private String dbUsername;
 	private int defaultDistance;
+	private int queryLimit;
 	private int blockToolId;
-	private int removeToolId;
+	private boolean removeToolBlock;
 	private int toolId;
 	private boolean useCanaryDb;
 	private boolean debug;
@@ -112,16 +113,16 @@ public class LogBlockConfig {
 	 * Get the remove tool id
 	 * @return
 	 */
-	public int getRemoveBlockToolBlock() {
-		return removeToolId;
+	public boolean removeToolBlock() {
+		return removeToolBlock;
 	}
 	
 	/**
 	 * Set the remove tool id
 	 * @return
 	 */
-	public void setRemoveBlockToolBlock(int removeToolId) {
-		this.removeToolId = removeToolId;
+	public void setRemoveToolBlock(boolean removeToolBlock) {
+		this.removeToolBlock = removeToolBlock;
 	}
 	
 	/**
@@ -186,5 +187,21 @@ public class LogBlockConfig {
 	 */
 	public void setDelay(int delay) {
 		this.delay = delay;
+	}
+	
+	/**
+	 * Get the limit for a query (amount of returned rows per query)
+	 * @return
+	 */
+	public int getQueryLimit() {
+		return queryLimit;
+	}
+	
+	/**
+	 * Set the limit for a query (amount of returned rows per query)
+	 * @return
+	 */
+	public void setQueryLimit(int queryLimit) {
+		this.queryLimit = queryLimit;
 	}
 }

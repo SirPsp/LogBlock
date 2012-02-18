@@ -47,5 +47,13 @@ public class WorldBlock implements IBlock {
 	public void setWorld(int world) {
 		this.world = world;
 	}
+	
+	public String toString() {
+    	return  "BLOCK\n  Type: "+type+"\n"+
+    			", Data: "+data+"\n"+
+    			", World: "+world+"\n"+
+    			"===================================\n";
+	}
+    
 
 }

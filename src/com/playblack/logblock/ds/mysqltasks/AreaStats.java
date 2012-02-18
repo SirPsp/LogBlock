@@ -72,17 +72,20 @@ public class AreaStats extends ExecutionTask {
 	          rs.close();
 	        if (ps != null)
 	          ps.close();
-	        if (this.conn != null)
-	          this.conn.close();
+	        if (conn != null) {
+				if(!conn.isClosed()) {
+					conn.close();
+				}
+			}
 	      } catch (SQLException ex) {
 	        log.log(Level.SEVERE, getClass().getName() + " SQL exception on close", ex);
 	      }
 	    }
 
-	    this.player.sendMessage(ColorManager.Navy + "Within " + this.size + " blocks of you: ");
+	    this.player.sendMessage(ColorManager.LightBlue + "Within " + this.size + " blocks of you: ");
 	    if (players.size() == 0)
 	    {
-	      this.player.sendMessage(ColorManager.Navy + "No results found.");
+	      this.player.sendMessage(ColorManager.LightBlue + "No results found.");
 	      return;
 	    }
 

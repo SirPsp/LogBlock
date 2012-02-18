@@ -20,6 +20,7 @@ public class ItemManager {
 	 * @param canaryItemMap
 	 */
 	public ItemManager(Map<String,Integer> canaryItemMap) {
+		items = new HashMap<String, Integer>();
 		items.putAll(canaryItemMap);
 	}
 	

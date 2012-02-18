@@ -13,7 +13,7 @@ public class CanaryConnectionWrapper {
 	public Connection getConnection() {
 		Connection conn = null;
 		try {
-			conn = (Connection) etc.getClass().getMethod("getConnection", (Class<?>)null).invoke(etc, (Object[])null);
+			conn = (Connection) etc.getClass().getMethod("getConnection", (Class<?>[])null).invoke(etc, (Object[])null);
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

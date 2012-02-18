@@ -7,7 +7,7 @@ import com.playblack.logblock.utils.LogBlockConfig;
 import com.playblack.mcutils.PlayerWrapper;
 
 
-public class LBCommands {
+public class LBCommands extends PluginListener {
 	IDataSource taskManager;
 	LogBlockConfig cfg;
 	Logger log = Logger.getLogger("Minecraft");

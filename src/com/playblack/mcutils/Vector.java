@@ -371,9 +371,9 @@ public class Vector
     }
     
     public String toString() {
-    	return  "\n  x: "+getX()+"\n"+
+    	return  "VECTOR\n  x: "+getX()+"\n"+
     			", y: "+getY()+"\n"+
     			", z: "+getZ()+"\n"+
-    			"===================================";
+    			"===================================\n";
     }
 }

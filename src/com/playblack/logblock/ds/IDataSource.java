@@ -54,10 +54,11 @@ public interface IDataSource {
 	public void getBlockHistory(PlayerWrapper player, Vector v, int world, int limit);
 	
 	/**
-	 * Takes a list of blocks and dumps them into the database
-	 * TODO: Add block list object etc
+	 * Starts the thread that dumps stuff into the database
+	 * @param delay
+	 * @param limit
 	 */
-	public void processBlockList(int delay, int limit);
+	public void startBlockDumper(long delay, int limit);
 	
 	/**
 	 * Add a block to the block queue.
@@ -75,8 +76,19 @@ public interface IDataSource {
 	public void executeOther(Runnable r);
 	
 	/**
+	 * Schedule a periodic event.
+	 * @param r
+	 * @param delay
+	 */
+	public void scheduleEvent(Runnable r, long delay);
+	/**
 	 * Returns a connection to use outside this manager
 	 * @return
 	 */
 	public Connection getConnection();
+	
+	/**
+	 * Destroy the manager and cancel all running threads
+	 */
+	public void destroy();
 }

@@ -61,8 +61,11 @@ public class WorldBlockStats extends ExecutionTask {
 	          rs.close();
 	        if (ps != null)
 	          ps.close();
-	        if (this.conn != null)
-	          this.conn.close();
+	        if (conn != null) {
+				if(!conn.isClosed()) {
+					conn.close();
+				}
+			}
 	      } catch (SQLException ex) {
 	        log.log(Level.SEVERE, getClass().getName() + " SQL exception on close", ex);
 	      }

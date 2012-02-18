@@ -22,7 +22,7 @@ abstract public class ExecutionTask implements Runnable {
 	 * Default constructor
 	 */
 	public ExecutionTask() {
-		
+
 	}
 
 

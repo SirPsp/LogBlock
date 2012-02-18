@@ -13,13 +13,14 @@ public class LogBlock extends Plugin {
 	private LogBlockConfig cfg;
 	private ItemManager itemManager = new ItemManager(etc.getDataSource().getItems());
 	private ConnectionService connections;
-	LBCommands commands;
-	IDataSource manager;
+	private LBCommands commands;
+	private LBBlocks blocks;
+	public IDataSource manager;
 	
 	@Override
 	public void disable() {
-		// TODO Auto-generated method stub
-
+		manager.destroy();
+		Logger.getLogger("Minecraft").info("LogBlock disabled. (Version 20)");
 	}
 
 	@Override
@@ -31,20 +32,39 @@ public class LogBlock extends Plugin {
 		else {
 			connections = new ConnectionService(cfg.getDbUrl(), cfg.getDbUsername(), cfg.getDbPassword());
 		}
-		if(cfg.useCanaryDb()) {
-			manager = new MysqlData(connections, itemManager, Logger.getLogger("Minecraft"));
-		}
-		commands = new LBCommands(manager, cfg);
+		manager = new MysqlData(connections, itemManager, Logger.getLogger("Minecraft"));
+		
+		manager.startBlockDumper(cfg.getDelay(), 100);
+		
+		commands = new LBCommands(manager, cfg); 
+		blocks = new LBBlocks(manager, cfg);
+		etc.getLoader().addListener(PluginLoader.Hook.COMMAND, commands, this, PluginListener.Priority.LOW);
+		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_RIGHTCLICKED, blocks, this, PluginListener.Priority.LOW);
+		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_PLACE, blocks, this, PluginListener.Priority.LOW);
+		etc.getLoader().addListener(PluginLoader.Hook.BLOCK_BROKEN, blocks, this, PluginListener.Priority.LOW);
+		etc.getLoader().addListener(PluginLoader.Hook.SIGN_CHANGE, blocks, this, PluginListener.Priority.LOW);
+		etc.getLoader().addListener(PluginLoader.Hook.ITEM_USE, blocks, this, PluginListener.Priority.LOW);
+		//etc.getLoader().addListener(PluginLoader.Hook.EXPLODE, blocks, this, PluginListener.Priority.LOW);
+		etc.getInstance().addCommand("/lb", " - LogBlock display command.");
+		etc.getInstance().addCommand("/lb_cleanup", " - LogBlock table row cleaning.");
+		etc.getInstance().addCommand("/rollback",
+				" - LogBlock Rollback command.");
+		etc.getLoader().addCustomListener(new LBHook(manager));
+		Logger.getLogger("Minecraft").info("LogBlock enabled. (Version 20)");
 
 	}
 	
+	public String getName() {
+		return "LogBlock";
+	}
 	private void propsToConfig() {
 		PropertiesFile props = new PropertiesFile("plugins/LogBlock/logblock.properties");
+		cfg = new LogBlockConfig();
 		cfg.setToolId(props.getInt("tool-id"));
 		cfg.setDebug(props.getBoolean("debug"));
-		cfg.setUseCanaryDb(props.getBoolean("use-hmod-db"));
+		cfg.setUseCanaryDb(props.getBoolean("use-canary-db", false)); //false default in case someone misses to rewrite that
 		cfg.setDelay(props.getInt("delay"));
-		cfg.setRemoveBlockToolBlock(props.getInt("tool-block-remove"));
+		cfg.setRemoveToolBlock(props.getBoolean("tool-block-remove"));
 		cfg.setBlockToolId(props.getInt("tool-block-id"));
 		cfg.setDefaultDistance(props.getInt("default-distance"));
 		

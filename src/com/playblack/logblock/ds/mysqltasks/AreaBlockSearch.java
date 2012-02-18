@@ -58,7 +58,7 @@ public class AreaBlockSearch extends ExecutionTask {
 	      ps.setInt(9, this.world);
 	      rs = ps.executeQuery();
 
-	      this.player.sendMessage(ColorManager.Navy+"Block history within " + this.size + " blocks of  " + (int)this.location.getX() + ", " + (int)this.location.getY() + ", " + (int)this.location.getZ() + ": ");
+	      this.player.sendMessage(ColorManager.LightBlue+"Block history within " + this.size + " blocks of  " + (int)this.location.getX() + ", " + (int)this.location.getY() + ", " + (int)this.location.getZ() + ": ");
 
 	      while (rs.next())
 	      {
@@ -93,14 +93,17 @@ public class AreaBlockSearch extends ExecutionTask {
 	          rs.close();
 	        if (ps != null)
 	          ps.close();
-	        if (conn != null)
-	          conn.close();
+	        if (conn != null) {
+				if(!conn.isClosed()) {
+					conn.close();
+				}
+			}
 	      } catch (SQLException ex) {
 	    	  log.log(Level.SEVERE, getClass().getName() + " SQL exception on close", ex);
 	      }
 	    }
 	    if (!hist)
-	    player.sendMessage(ColorManager.prependColor(new StringBuilder(), ColorManager.Navy).append("None").toString());
+	    player.sendMessage(ColorManager.prependColor(new StringBuilder(), ColorManager.LightBlue).append("None").toString());
 		
 	}
 }

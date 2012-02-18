@@ -84,7 +84,7 @@ public class PlayerWrapper {
 	 */
 	public String getName() {
 		try {
-			return (String) player.getClass().getMethod("getName", (Class<?>)null).invoke(player, (Object[])null);
+			return (String) player.getClass().getMethod("getName", (Class<?>[])null).invoke(player, (Object[])null);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -135,9 +135,9 @@ public class PlayerWrapper {
 	public Vector getLocation() {
 		Vector v = null;
 		try {
-			int x = (Integer) player.getClass().getMethod("getX", (Class<?>)null).invoke(player, (Object[])null);
-			int y = (Integer) player.getClass().getMethod("getY", (Class<?>)null).invoke(player, (Object[])null);
-			int z = (Integer) player.getClass().getMethod("getZ", (Class<?>)null).invoke(player, (Object[])null);
+			double x = (Double) player.getClass().getMethod("getX", (Class<?>[])null).invoke(player, (Object[])null);
+			double y = (Double) player.getClass().getMethod("getY", (Class<?>[])null).invoke(player, (Object[])null);
+			double z = (Double) player.getClass().getMethod("getZ", (Class<?>[])null).invoke(player, (Object[])null);
 			
 			v = new Vector(x,y,z);
 			

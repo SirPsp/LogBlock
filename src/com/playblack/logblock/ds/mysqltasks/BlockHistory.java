@@ -27,7 +27,7 @@ public class BlockHistory extends ExecutionTask {
 	}
 	@Override
 	public void run() {
-		player.sendMessage(ColorManager.Navy + "Block history (" + location.getX() + ", " + location.getY() + ", " + location.getZ() + "): ");
+		player.sendMessage(ColorManager.LightBlue + "Block history (" + location.getX() + ", " + location.getY() + ", " + location.getZ() + "): ");
 		boolean hist = false;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -69,7 +69,7 @@ public class BlockHistory extends ExecutionTask {
 					.append(itemManager.getItemName(rs.getInt("type")));
 
 				
-				player.sendMessage(ColorManager.prependColor(sb, ColorManager.Navy).toString());
+				player.sendMessage(ColorManager.prependColor(sb, ColorManager.Gold).toString());
 				hist = true;
 			}
 		} catch (SQLException ex) {
@@ -80,14 +80,17 @@ public class BlockHistory extends ExecutionTask {
 					rs.close();
 				if (ps != null)
 					ps.close();
-				if (conn != null)
-					conn.close();
+				if (conn != null) {
+					if(!conn.isClosed()) {
+						conn.close();
+					}
+				}
 			} catch (SQLException ex) {
 				log.log(Level.SEVERE, "LogBlock SQL exception on close", ex);
 			}
 		}
 		if (!hist)
-			player.sendMessage(ColorManager.Navy + "None.");
+			player.sendMessage(ColorManager.LightBlue + "None.");
 
 	}
 

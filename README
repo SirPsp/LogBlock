@@ -1,2 +1,10 @@
 LogBlock
 Rewritten version of the old hMod LogBlock plugin by bootswithdefer.
+
+LogBlock for CanaryMod
+====================
+A 90% rewrite of LogBlock from bootswithdefer.
+This new version features better thread management and the possibility
+to plug implement any datasource you want. This version also features an "API" so
+other plugins can schedule manipulated blocks for logging.
+

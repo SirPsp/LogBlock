@@ -6,9 +6,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.playblack.logblock.blocks.IBlock;
+import com.playblack.logblock.blocks.SignBlock;
 import com.playblack.logblock.blocks.WorldBlock;
 import com.playblack.logblock.ds.mysqltasks.*;
 import com.playblack.logblock.ds.services.ConnectionService;
@@ -147,16 +149,12 @@ public class MysqlData implements IDataSource {
 	}
 	
 	@Override
-	public void processBlockList(int delay, int limit) {
+	public void startBlockDumper(long delay, int limit) {
 		try {
-			threadPool.execute(new DumpBlockEntries(connectionPool.getConnection(), log, delay, limit));
+			threadPool.scheduleAtFixedRate(new DumpBlockEntries(log, limit, connectionPool), 0, delay, TimeUnit.SECONDS);
 		} 
-		catch (SQLException e) {
-			log.warning("LogBlock could not start BlockDumping Thread - cancelling -  "+e.getMessage());
-			e.printStackTrace();
-		}
 		catch(RejectedExecutionException e) {
-			log.warning("LogBlock could not start BlockDumping Thread - cancelling -  "+e.getMessage());
+			log.warning("LogBlock could not start BlockDumper Thread! This is highly crappy! "+e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -167,11 +165,22 @@ public class MysqlData implements IDataSource {
 			oldBlock = new WorldBlock(0,0,0);
 		}
 		if(newBlock == null) {
-			//the fuck???
 			newBlock = new WorldBlock(0,0,0);
 		}
-		
+
 		BlockEntry be = new BlockEntry(player, newBlock, oldBlock, position);
+		if(newBlock instanceof SignBlock) {
+			String text = "sign";
+			for (int i = 0; i < 4; i++)
+				text = text + " [" + ((SignBlock)newBlock).getAtLine(i) + "]";
+			be.extra = text;
+		}
+		else if(oldBlock instanceof SignBlock) {
+			String text = "sign";
+			for (int i = 0; i < 4; i++)
+				text = text + " [" + ((SignBlock)oldBlock).getAtLine(i) + "]";
+			be.extra = text;
+		}
 		if(blockList.offer(be)) {
 			
 		}
@@ -193,11 +202,22 @@ public class MysqlData implements IDataSource {
 		}
 	}
 	
+	@Override
+	public void scheduleEvent(Runnable r, long delay) {
+		threadPool.scheduleAtFixedRate(r, 0, delay, TimeUnit.SECONDS);
+	}
+	
 	public Connection getConnection() {
 		try {
 			return connectionPool.getConnection();
 		} catch (SQLException e) {
+			e.getStackTrace();
 			return null;
 		}
+	}
+	
+	@Override
+	public void destroy() {
+		threadPool.shutdownNow();
 	}
 }
