@@ -13,6 +13,7 @@ public class LogBlockConfig {
 	private boolean useCanaryDb;
 	private boolean debug;
 	private int delay;
+	private static String dateFormat = "MM-dd hh:mm:ss";
 	
 	/**
 	 * Get the db driver name
@@ -203,5 +204,21 @@ public class LogBlockConfig {
 	 */
 	public void setQueryLimit(int queryLimit) {
 		this.queryLimit = queryLimit;
+	}
+	
+	/**
+	 * Get the currently set date format for formatting timestamps
+	 * @return
+	 */
+	public static String getDateFormat() {
+		return dateFormat;
+	}
+	
+	/**
+	 * Set the date format for formatting timestamps
+	 * @param dateFormat
+	 */
+	public static void setDateFormat(String dateFormat) {
+		LogBlockConfig.dateFormat = dateFormat;
 	}
 }

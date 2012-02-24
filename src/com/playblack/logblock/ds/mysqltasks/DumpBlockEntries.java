@@ -64,7 +64,7 @@ public class DumpBlockEntries implements Runnable {
 						int key=-1;
 						if(keys.next()) {
 							key = keys.getInt(1);
-							System.out.println("Inserting block "+b.newBlock.getType()+" returned ID: "+key);
+							//System.out.println("Inserting block "+b.newBlock.getType()+" returned ID: "+key);
 						}
 						
 

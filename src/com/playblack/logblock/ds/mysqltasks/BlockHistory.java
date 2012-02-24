@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.playblack.logblock.ds.ExecutionTask;
+import com.playblack.logblock.utils.LogBlockConfig;
 import com.playblack.mcutils.ColorManager;
 import com.playblack.mcutils.ItemManager;
 import com.playblack.mcutils.PlayerWrapper;
@@ -32,7 +33,7 @@ public class BlockHistory extends ExecutionTask {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd hh:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(LogBlockConfig.getDateFormat());
 		try {
 			conn.setAutoCommit(false);
 			ps = conn.prepareStatement("SELECT * from blocks left join extra using (id) where y = ? and x = ? and z = ?  and world = ? order by date desc limit 10", 1);
@@ -44,6 +45,7 @@ public class BlockHistory extends ExecutionTask {
 			while (rs.next()) {
 				Timestamp date = rs.getTimestamp("date");
 				String datestr = formatter.format(date);
+				
 				StringBuilder sb = new StringBuilder();
 				sb.append(datestr).append(" ").append(rs.getString("player")).append(" ");
 				//String msg = datestr + " " + rs.getString("player") + " ";

@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import com.playblack.logblock.blocks.IBlock;
 import com.playblack.logblock.ds.ExecutionTask;
+import com.playblack.logblock.utils.LogBlockConfig;
 import com.playblack.mcutils.ColorManager;
 import com.playblack.mcutils.ItemManager;
 import com.playblack.mcutils.PlayerWrapper;
@@ -42,7 +43,7 @@ public class AreaBlockSearch extends ExecutionTask {
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
 
-	    SimpleDateFormat formatter = new SimpleDateFormat("MM-dd hh:mm:ss");
+	    SimpleDateFormat formatter = new SimpleDateFormat(LogBlockConfig.getDateFormat());
 	    try
 	    {
 	      this.conn.setAutoCommit(false);

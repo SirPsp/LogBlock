@@ -119,7 +119,6 @@ public class Rollback implements Runnable {
 			if(rs.next()) {
 				//split by those patterns: " [" or "] [" or "] " or "]"
 				//This will fail if the sign content contains [ or ] by itself
-				//however due to legacy support there's nothing to do against, yet
 				String[] signText = rs.getString("extra").split("((\\s\\[|(\\]\\s\\[))|((\\]\\s))|\\])");
 				if(!signText[0].equalsIgnoreCase("sign")) {
 					return ret; //that wasn't a sign here
