@@ -126,7 +126,7 @@ public class LBBlocks extends PluginListener {
 		Vector v = new Vector(sign.getX(),
 				sign.getY(),
 				sign.getZ());
-		taskManager.queueBlock(player.getName(), b, null, v);
+		taskManager.queueBlock(player.getName(), null, b, v);
 		
 		//lock.this.queueSign(player, sign);
 		return false;

@@ -52,10 +52,10 @@ public class LBCommands extends PluginListener {
 	 * @return
 	 */
 	private int getWorldId(World world) {
-		if(world.getType() == World.Type.NORMAL) {
+		if(world.getType() == World.Dimension.NORMAL) {
 			return 0;
 		}
-		else if(world.getType() == World.Type.NETHER) {
+		else if(world.getType() == World.Dimension.NETHER) {
 			return -1;
 		}
 		else {
