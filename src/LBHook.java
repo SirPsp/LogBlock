@@ -29,10 +29,6 @@ public class LBHook implements PluginInterface {
 		return 3;
 	}
 
-	private int getWorldId(World world) {
-		return world.getType().getId();
-
-	}
 	
 	private ArrayList<String> processSignText(Block b) {
 		Sign s = (Sign)b.getWorld().getComplexBlock(b);
@@ -42,7 +38,7 @@ public class LBHook implements PluginInterface {
 		}
 		return txt;
 	}
-	private void queue(String player, Block oldBlock, Block newBlock) {
+	private void queue(String player, Block oldBlock, Block newBlock, String world) {
 		Vector v = null;
 		IBlock oBlock = null;
 		IBlock nBlock = null;
@@ -52,13 +48,15 @@ public class LBHook implements PluginInterface {
 			if(oldBlock.getType() == 63) {
 				oBlock = new SignBlock(oldBlock.getType(), 
 						(byte)oldBlock.getData(), 
-						getWorldId(oldBlock.getWorld()),
+						oldBlock.getWorld().getType().getId(),
+						oldBlock.getWorld().getName().replace("worlds/", ""), 
 						processSignText(oldBlock));
 			}
 			else {
 				oBlock = new WorldBlock(oldBlock.getType(), 
 						(byte)oldBlock.getData(), 
-						getWorldId(oldBlock.getWorld()));
+						oldBlock.getWorld().getType().getId(), 
+						oldBlock.getWorld().getName().replace("worlds/", ""));
 			}
 		}
 		if(newBlock != null) {
@@ -68,16 +66,18 @@ public class LBHook implements PluginInterface {
 			if(newBlock.getType() == 63) {
 				nBlock = new SignBlock(newBlock.getType(), 
 						(byte)newBlock.getData(), 
-						getWorldId(newBlock.getWorld()),
+						newBlock.getWorld().getType().getId(),
+						newBlock.getWorld().getName().replace("worlds/", ""), 
 						processSignText(newBlock));
 			}
 			else {
 				nBlock = new WorldBlock(newBlock.getType(), 
 						(byte)newBlock.getData(), 
-						getWorldId(newBlock.getWorld()));
+						newBlock.getWorld().getType().getId(),
+						newBlock.getWorld().getName().replace("worlds/", ""));
 			}
 		}
-		ds.queueBlock(player, oBlock, nBlock, v);
+		ds.queueBlock(player, oBlock, nBlock, v, world);
 	}
 	
 	@Override
@@ -92,9 +92,11 @@ public class LBHook implements PluginInterface {
 		}
 		Block oldBlock;
 		Block newBlock;
+		String world = "";
 		//Process oldBlock
 		if((ob[1] != null) && ob[1] instanceof Block) {
 			oldBlock = (Block)ob[1];
+			world = oldBlock.getWorld().getName().replace("worlds/", "");
 		}
 		else {
 			oldBlock = null;
@@ -103,12 +105,12 @@ public class LBHook implements PluginInterface {
 		//process newBlock
 		if((ob[2] != null) && ob[2] instanceof Block) {
 			newBlock = (Block)ob[2];
+			world = newBlock.getWorld().getName().replace("worlds/", "");
 		}
 		else {
 			newBlock = null;
 		}
-		
-		queue(player, oldBlock, newBlock);
+		queue(player, oldBlock, newBlock, world);
 		return null;
 	}
 

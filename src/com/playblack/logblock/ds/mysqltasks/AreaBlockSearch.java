@@ -25,11 +25,12 @@ public class AreaBlockSearch extends ExecutionTask {
 	 * @param size
 	 * @param world
 	 */
-	public AreaBlockSearch(PlayerWrapper player, int size, int world, IBlock block, Connection conn, ItemManager im, Logger log) {
+	public AreaBlockSearch(PlayerWrapper player, int size, int dimension, String world, IBlock block, Connection conn, ItemManager im, Logger log) {
 		this.player = player;
 		this.location = player.getLocation(); //so awesome :D
 		this.size = size;
 		this.world = world;
+		this.dimension = dimension;
 		this.conn = conn;
 		this.block = block;
 		this.log = log;
@@ -47,7 +48,7 @@ public class AreaBlockSearch extends ExecutionTask {
 	    try
 	    {
 	      this.conn.setAutoCommit(false);
-	      ps = this.conn.prepareStatement("SELECT * from blocks where (type = ? or replaced = ?) and y > ? and y < ? and x > ? and x < ? and z > ? and z < ? AND world = ? order by date desc limit 10", 1);
+	      ps = this.conn.prepareStatement("SELECT * from blocks where (type = ? or replaced = ?) and y > ? and y < ? and x > ? and x < ? and z > ? and z < ? AND dimensio = ? AND world = ? order by date desc limit 10", 1);
 	      ps.setInt(1, this.block.getType());
 	      ps.setInt(2, this.block.getType());
 	      ps.setInt(3, (int)this.location.getY() - this.size);
@@ -56,7 +57,8 @@ public class AreaBlockSearch extends ExecutionTask {
 	      ps.setInt(6, (int)this.location.getX() + this.size);
 	      ps.setInt(7, (int)this.location.getZ() - this.size);
 	      ps.setInt(8, (int)this.location.getZ() + this.size);
-	      ps.setInt(9, this.world);
+	      ps.setInt(9, this.dimension);
+	      ps.setString(10, this.world);
 	      rs = ps.executeQuery();
 
 	      this.player.sendMessage(ColorManager.LightBlue+"Block history within " + this.size + " blocks of  " + (int)this.location.getX() + ", " + (int)this.location.getY() + ", " + (int)this.location.getZ() + ": ");

@@ -48,7 +48,7 @@ public class DumpBlockEntries implements Runnable {
 						continue;
 					}
 					ps = conn.prepareStatement(
-									"INSERT INTO blocks (date, player, replaced, type, damage, x, y, z, world) VALUES (now(),?,?,?,?,?,?,?,?)",
+									"INSERT INTO blocks (date, player, replaced, type, damage, x, y, z, dimension, world) VALUES (now(),?,?,?,?,?,?,?,?,?)",
 									Statement.RETURN_GENERATED_KEYS);
 					ps.setString(1, b.player);
 					ps.setInt(2, b.oldBlock.getType());
@@ -57,7 +57,8 @@ public class DumpBlockEntries implements Runnable {
 					ps.setInt(5, b.position.getBlockX());
 					ps.setInt(6, b.position.getBlockY());
 					ps.setInt(7, b.position.getBlockZ());
-					ps.setInt(8, b.newBlock.getWorld());
+					ps.setInt(8, b.newBlock.getDimension());
+					ps.setString(9, b.newBlock.getWorld());
 					ps.executeUpdate();					
 					if (b.extra != null) {
 						ResultSet keys = ps.getGeneratedKeys();

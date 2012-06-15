@@ -17,7 +17,7 @@ public class AreaPlayerStats extends ExecutionTask {
 
 	String name;
 	
-	public AreaPlayerStats(Connection conn, PlayerWrapper player, String name, int size, ItemManager im, Logger log, int world)
+	public AreaPlayerStats(Connection conn, PlayerWrapper player, String name, int size, ItemManager im, Logger log, int dimension, String world)
 	  {
 	    this.player = player;
 	    this.location = player.getLocation();
@@ -27,6 +27,7 @@ public class AreaPlayerStats extends ExecutionTask {
 	    this.itemManager = im;
 	    this.log = log;
 	    this.world = world;
+	    this.dimension = dimension;
 	  }
 	@Override
 	public void run() {
@@ -39,13 +40,14 @@ public class AreaPlayerStats extends ExecutionTask {
 	    try
 	    {
 	      this.conn.setAutoCommit(false);
-	      ps = this.conn.prepareStatement("SELECT type, count(type) as num from blocks where type > 0 and player = ? and y > 0 and x > ? and x < ? and z > ? and z < ? AND world = ? group by type order by count(replaced) desc limit 10", 1);
+	      ps = this.conn.prepareStatement("SELECT type, count(type) as num from blocks where type > 0 and player = ? and y > 0 and x > ? and x < ? and z > ? and z < ? AND dimension = ? AND world = ? group by type order by count(replaced) desc limit 10", 1);
 	      ps.setString(1, this.name);
 	      ps.setInt(2, (int)this.location.getX() - this.size);
 	      ps.setInt(3, (int)this.location.getX() + this.size);
 	      ps.setInt(4, (int)this.location.getZ() - this.size);
 	      ps.setInt(5, (int)this.location.getZ() + this.size);
-	      ps.setInt(6, this.world);
+	      ps.setInt(6, this.dimension);
+	      ps.setString(7, this.world);
 	      rs = ps.executeQuery();
 	      while (rs.next())
 	      {
@@ -57,13 +59,14 @@ public class AreaPlayerStats extends ExecutionTask {
 	      rs.close();
 	      ps.close();
 
-	      ps = this.conn.prepareStatement("SELECT replaced, count(replaced) as num from blocks where replaced > 0 and player = ? and y > 0 and x > ? and x < ? and z > ? and z < ? AND world = ? group by replaced order by count(replaced) desc limit 10", 1);
+	      ps = this.conn.prepareStatement("SELECT replaced, count(replaced) as num from blocks where replaced > 0 and player = ? and y > 0 and x > ? and x < ? and z > ? and z < ? AND dimension =? AND world = ? group by replaced order by count(replaced) desc limit 10", 1);
 	      ps.setString(1, this.name);
 	      ps.setInt(2, (int)this.location.getX() - this.size);
 	      ps.setInt(3, (int)this.location.getX() + this.size);
 	      ps.setInt(4, (int)this.location.getZ() - this.size);
 	      ps.setInt(5, (int)this.location.getZ() + this.size);
-	      ps.setInt(6, this.world);
+	      ps.setInt(6, this.dimension);
+	      ps.setString(7, this.world);
 	      rs = ps.executeQuery();
 	      while (rs.next())
 	      {

@@ -21,7 +21,7 @@ public interface IDataSource {
 	 * @param world
 	 * @param block
 	 */
-	public void areaBlockSearch(PlayerWrapper player, int size, int world, IBlock block);
+	public void areaBlockSearch(PlayerWrapper player, int size, int dimension, String world, IBlock block);
 	
 	/**
 	 * Executes a new general area stats operation
@@ -29,7 +29,7 @@ public interface IDataSource {
 	 * @param size
 	 * @param world
 	 */
-	public void areaStats(PlayerWrapper player, int size, int world);
+	public void areaStats(PlayerWrapper player, int size, int dimension, String world);
 	
 	/**
 	 * Executes a new stats operation specific to a player
@@ -37,13 +37,13 @@ public interface IDataSource {
 	 * @param world
 	 * @param player
 	 */
-	public void areaPlayerStats(int size, int world, PlayerWrapper player, String playerName);
+	public void areaPlayerStats(int size, int dimension, String world, PlayerWrapper player, String playerName);
 	
 	/**
 	 * Executes a new stats operation listing statistics for all blocks in a world
 	 * @param world
 	 */
-	public void worldBlockStats(int world, PlayerWrapper player);
+	public void worldBlockStats(int dimension, String world, PlayerWrapper player);
 	
 	/**
 	 * Executes a new block history listing operation
@@ -51,7 +51,7 @@ public interface IDataSource {
 	 * @param world
 	 * @param limit
 	 */
-	public void getBlockHistory(PlayerWrapper player, Vector v, int world, int limit);
+	public void getBlockHistory(PlayerWrapper player, Vector v, int dimension, String world, int limit);
 	
 	/**
 	 * Starts the thread that dumps stuff into the database
@@ -66,7 +66,7 @@ public interface IDataSource {
 	 * @param oldBlock
 	 * @param newBlock
 	 */
-	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock, Vector position);
+	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock, Vector position, String world);
 	
 	/**
 	 * This allows the execution of any runnable task with the thread manager to<br>

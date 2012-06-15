@@ -14,9 +14,10 @@ import com.playblack.mcutils.PlayerWrapper;
 
 public class AreaStats extends ExecutionTask {
 
-	public AreaStats(PlayerWrapper p, int size, int world, Connection conn) {
+	public AreaStats(PlayerWrapper p, int size, int dimension, String world, Connection conn) {
 		this.size = size;
 		this.world = world;
+		this.dimension = dimension;
 		this.player = p;
 		this.location = p.getLocation();
 		this.conn = conn;
@@ -32,14 +33,15 @@ public class AreaStats extends ExecutionTask {
 	    try
 	    {
 	      this.conn.setAutoCommit(false);
-	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where type > 0 and y > ? and y < ? and x > ? and x < ? and z > ? and z < ? AND world = ? group by player order by count(player) desc limit 10", 1);
+	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where type > 0 and y > ? and y < ? and x > ? and x < ? and z > ? and z < ? AND dimension = ? AND world = ? group by player order by count(player) desc limit 10", 1);
 	      ps.setInt(1, (int)this.location.getY() - this.size);
 	      ps.setInt(2, (int)this.location.getY() + this.size);
 	      ps.setInt(3, (int)this.location.getX() - this.size);
 	      ps.setInt(4, (int)this.location.getX() + this.size);
 	      ps.setInt(5, (int)this.location.getZ() - this.size);
 	      ps.setInt(6, (int)this.location.getZ() + this.size);
-	      ps.setInt(7, this.world);
+	      ps.setInt(7, this.dimension);
+	      ps.setString(8, this.world);
 	      rs = ps.executeQuery();
 	      while (rs.next())
 	      {
@@ -49,14 +51,15 @@ public class AreaStats extends ExecutionTask {
 	      rs.close();
 	      ps.close();
 
-	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where replaced > 0 and y > ? and y < ? and x > ? and x < ? and z > ? and z < ? AND world = ? group by player order by count(player) desc limit 10", 1);
+	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where replaced > 0 and y > ? and y < ? and x > ? and x < ? and z > ? and z < ? AND dimension =? AND world = ? group by player order by count(player) desc limit 10", 1);
 	      ps.setInt(1, (int)this.location.getY() - this.size);
 	      ps.setInt(2, (int)this.location.getY() + this.size);
 	      ps.setInt(3, (int)this.location.getX() - this.size);
 	      ps.setInt(4, (int)this.location.getX() + this.size);
 	      ps.setInt(5, (int)this.location.getZ() - this.size);
 	      ps.setInt(6, (int)this.location.getZ() + this.size);
-	      ps.setInt(7, this.world);
+	      ps.setInt(7, this.dimension);
+	      ps.setString(8, this.world);
 	      rs = ps.executeQuery();
 	      while (rs.next())
 	      {

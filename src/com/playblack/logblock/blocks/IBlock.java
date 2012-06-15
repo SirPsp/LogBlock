@@ -27,14 +27,26 @@ public interface IBlock {
 	public void setType(int type);
 	
 	/**
-	 * Get the world ID for this block
+	 * Get the dimension for this block
 	 * @return
 	 */
-	public int getWorld();
+	public int getDimension();
 	
 	/**
-	 * Set the world ID for this block
+	 * Set the dimension for this block
+	 * @param dimension
+	 */
+	public void setDimension(int dim);
+	
+	/**
+	 * Get the world for this block
+	 * @return
+	 */
+	public String getWorld();
+	
+	/**
+	 * Set the world for this block
 	 * @param world
 	 */
-	public void setWorld(int world);
+	public void setWorld(String world);
 }

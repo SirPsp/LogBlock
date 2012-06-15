@@ -14,8 +14,9 @@ abstract public class ExecutionTask implements Runnable {
 	protected PlayerWrapper player;
 	protected Vector location;
 	protected IBlock block;
-	protected int size; //or limit, depending on task
-	protected int world;
+	protected int size; //or limit, depending on tasking
+	protected String world;
+	protected int dimension;
 	protected ItemManager itemManager;
 	protected Logger log;
 	/**

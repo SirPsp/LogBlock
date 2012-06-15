@@ -24,7 +24,7 @@ public class Rollback implements Runnable {
         if (conn == null) {
             throw new NullPointerException();
         }
-        String query = "select type, replaced, damage, x, y, z, id, world from blocks where player = ? and date > date_sub(now(), interval ? minute) order by date desc";
+        String query = "select type, replaced, damage, x, y, z, id, dimension, world from blocks where player = ? and date > date_sub(now(), interval ? minute) order by date desc";
         PreparedStatement ps = null;
         ResultSet rs = null;
         changesets = new LinkedBlockingQueue<Changeset>();
@@ -41,7 +41,8 @@ public class Rollback implements Runnable {
                     Vector p = new Vector(rs.getInt("x"), rs.getInt("y"),
                             rs.getInt("z"));
                     int type = rs.getInt("type");
-                    int world = rs.getInt("world");
+                    int dimension = rs.getInt("dimension");
+                    String world = rs.getString("world");
                     byte data = (byte) rs.getInt("damage");
                     int replaced = rs.getInt("replaced");
                     if (replaced == 63) {
@@ -50,8 +51,8 @@ public class Rollback implements Runnable {
                         changesets.add( 
                                 new Changeset(
                                         p, 
-                                        new WorldBlock(type,0,world), 
-                                        new SignBlock(63, data, world, getSignContent(conn, bId))));
+                                        new WorldBlock(type,0,dimension,world), 
+                                        new SignBlock(63, data, dimension, world, getSignContent(conn, bId))));
 //                        currentBlocks.put(p, new WorldBlock(type, 0, world));
 //                        recordedBlocks.put(p, new SignBlock(63, data, world,
 //                                getSignContent(conn, bId)));
@@ -59,8 +60,8 @@ public class Rollback implements Runnable {
                         changesets.add( 
                                 new Changeset(
                                         p, 
-                                        new WorldBlock(type,0,world), 
-                                        new WorldBlock(replaced, data, world)));
+                                        new WorldBlock(type,0,dimension,world), 
+                                        new WorldBlock(replaced, data, dimension, world)));
 //                        currentBlocks.put(p, new WorldBlock(type, 0, world));
 //                        recordedBlocks.put(p,
 //                                new WorldBlock(replaced, data,
@@ -189,7 +190,8 @@ public class Rollback implements Runnable {
             Changeset changeset = changesets.poll();
             while (changeset != null)
             {
-                world = etc.getServer().getWorld(changeset.currentBlock.getWorld());
+                world = etc.getServer().getWorld(changeset.currentBlock.getWorld())[changeset.currentBlock.getDimension()];
+                log.info(changeset.currentBlock.getWorld());
                 changeBlock(changeset, world);
                 changeset = changesets.poll();
             }

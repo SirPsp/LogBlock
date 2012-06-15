@@ -51,17 +51,7 @@ public class LBCommands extends PluginListener {
 	 * @param world
 	 * @return
 	 */
-	private int getWorldId(World world) {
-		if(world.getType() == World.Dimension.NORMAL) {
-			return 0;
-		}
-		else if(world.getType() == World.Dimension.NETHER) {
-			return -1;
-		}
-		else {
-			return 1;
-		}
-	}
+
 	public boolean onCommand(Player player, String[] split) {
 		if (!player.canUseCommand(split[0])) {
 			return false;
@@ -72,7 +62,7 @@ public class LBCommands extends PluginListener {
 //				AreaStats th = new AreaStats(conn, player,
 //						LogBlock.this.defaultDist);
 //				new Thread(th).start();
-				taskManager.areaStats(new PlayerWrapper(player, log), cfg.getDefaultDistance(), getWorldId(player.getWorld()));
+				taskManager.areaStats(new PlayerWrapper(player, log), cfg.getDefaultDistance(), player.getWorld().getType().getId(), player.getWorld().getName().replace("worlds/", ""));
 				return true;
 			}
 
@@ -80,7 +70,9 @@ public class LBCommands extends PluginListener {
 				if (split[1].equalsIgnoreCase("world")) {
 //					PlayerWorldStats th = new PlayerWorldStats(conn, player);
 //					new Thread(th).start();
-					taskManager.worldBlockStats(getWorldId(player.getWorld()), new PlayerWrapper(player, log));
+					taskManager.worldBlockStats(player.getWorld().getType().getId(), 
+							player.getWorld().getName().replace("worlds/", ""), 
+							new PlayerWrapper(player, log));
 					return true;
 				}
 				player.notify("Incorrect usage.");
@@ -93,7 +85,8 @@ public class LBCommands extends PluginListener {
 //				new Thread(th).start();
 				if(split.length >= 3) {
 					taskManager.areaPlayerStats(cfg.getDefaultDistance(), 
-							getWorldId(player.getWorld()), 
+							player.getWorld().getType().getId(),
+							player.getWorld().getName().replace("worlds/", ""), 
 							new PlayerWrapper(player, log), 
 							split[2]);
 				}
@@ -111,7 +104,8 @@ public class LBCommands extends PluginListener {
 				if(split.length >= 3) {
 					taskManager.areaStats(new PlayerWrapper(player, log), 
 							Integer.parseInt(split[2]), 
-							getWorldId(player.getWorld()));
+							player.getWorld().getType().getId(), 
+							player.getWorld().getName().replace("worlds/", ""));
 				}
 				else {
 					player.notify("Incorrect usage.");
@@ -125,11 +119,12 @@ public class LBCommands extends PluginListener {
 //						type, LogBlock.this.defaultDist);
 //				new Thread(th).start();
 				if(split.length >= 3) {
-					IBlock b = new WorldBlock(0,0,0);
+					IBlock b = new WorldBlock(0,0,0, player.getWorld().getName().replace("worlds/", ""));
 					b.setType(Integer.parseInt(split[2]));
 					taskManager.areaBlockSearch(new PlayerWrapper(player, log), 
 							cfg.getDefaultDistance(), 
-							getWorldId(player.getWorld()), 
+							player.getWorld().getType().getId(), 
+							player.getWorld().getName().replace("worlds/", ""), 
 							b);
 					return true;
 				}

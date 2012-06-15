@@ -1,4 +1,5 @@
 //import java.util.HashMap;
+import java.io.File;
 import java.util.logging.Logger;
 
 //import com.playblack.logblock.blocks.IBlock;
@@ -24,7 +25,7 @@ public class LogBlock extends Plugin {
 	@Override
 	public void disable() {
 		manager.destroy();
-		Logger.getLogger("Minecraft").info("LogBlock disabled. (Version 20.1)");
+		Logger.getLogger("Minecraft").info("LogBlock disabled. (Version 21)");
 	}
 
 	@Override
@@ -54,7 +55,7 @@ public class LogBlock extends Plugin {
 		etc.getInstance().addCommand("/rollback",
 				" - LogBlock Rollback command.");
 		etc.getLoader().addCustomListener(new LBHook(manager));
-		Logger.getLogger("Minecraft").info("LogBlock enabled. (Version 20.1)");
+		Logger.getLogger("Minecraft").info("LogBlock enabled. (Version 21)");
 
 	}
 	
@@ -62,22 +63,23 @@ public class LogBlock extends Plugin {
 		return "LogBlock";
 	}
 	private void propsToConfig() {
+		new File("plugins/LogBlock/").mkdir();
 		PropertiesFile props = new PropertiesFile("plugins/LogBlock/logblock.properties");
 		cfg = new LogBlockConfig();
-		cfg.setToolId(props.getInt("tool-id"));
-		cfg.setDebug(props.getBoolean("debug"));
+		cfg.setToolId(props.getInt("tool-id", 270));
+		cfg.setDebug(props.getBoolean("debug", false));
 		cfg.setUseCanaryDb(props.getBoolean("use-canary-db", false)); //false default in case someone misses to rewrite that
-		cfg.setDelay(props.getInt("delay"));
-		cfg.setRemoveToolBlock(props.getBoolean("tool-block-remove"));
-		cfg.setBlockToolId(props.getInt("tool-block-id"));
-		cfg.setDefaultDistance(props.getInt("default-distance"));
+		cfg.setDelay(props.getInt("delay", 10));
+		cfg.setRemoveToolBlock(props.getBoolean("tool-block-remove", true));
+		cfg.setBlockToolId(props.getInt("tool-block-id", 95));
+		cfg.setDefaultDistance(props.getInt("default-distance", 20));
 		
-		cfg.setDbPassword(props.getString("password"));
-		cfg.setDbUsername(props.getString("username"));
-		cfg.setDbUrl(props.getString("url"));
-		cfg.setDbDriver(props.getString("driver"));
+		cfg.setDbPassword(props.getString("password", "pass"));
+		cfg.setDbUsername(props.getString("username", "root"));
+		cfg.setDbUrl(props.getString("url","jdbc:mysql://localhost:3306/minecraft"));
+		cfg.setDbDriver(props.getString("driver", "com.mysql.jdbc.Driver"));
 		
-		cfg.setQueryLimit(props.getInt("query-limit"));
+		cfg.setQueryLimit(props.getInt("query-limit", 200));
 		LogBlockConfig.setDateFormat(props.getString("date-format", "MM-dd hh:mm:ss"));
 	}
 

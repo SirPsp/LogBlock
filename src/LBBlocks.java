@@ -25,18 +25,18 @@ public class LBBlocks extends PluginListener {
 	 * @param world
 	 * @return
 	 */
-	private int getWorldId(World world) {
-		return world.getType().getId();
-//		if(world.getType() == World.Type.NORMAL) {
-//			return 0;
-//		}
-//		else if(world.getType() == World.Type.NETHER) {
-//			return -1;
-//		}
-//		else {
-//			return 1;
-//		}
-	}
+//	private int getDimensionId(World world) {
+//		return world.getType().getId();
+////		if(world.getType() == World.Type.NORMAL) {
+////			return 0;
+////		}
+////		else if(world.getType() == World.Type.NETHER) {
+////			return -1;
+////		}
+////		else {
+////			return 1;
+////		}
+//	}
 	
 	@Override
 	public boolean onBlockPlace(Player player, Block blockPlaced, Block blockClicked, Item itemInHand) {
@@ -44,7 +44,7 @@ public class LBBlocks extends PluginListener {
 				&& (player.canUseCommand("/blockhistory"))) {
 			taskManager.getBlockHistory(new PlayerWrapper(player, Logger.getLogger("Minecraft")), 
 					new Vector(blockPlaced.getX(), blockPlaced.getY(), blockPlaced.getZ()), 
-					getWorldId(blockPlaced.getWorld()), 
+					blockPlaced.getWorld().getType().getId(), blockPlaced.getWorld().getName().replace("worlds/", ""), 
 					cfg.getQueryLimit());
 			//LogBlock.this.showBlockHistory(player, blockPlaced);
 			//return LogBlock.this.toolblockRemove;
@@ -60,7 +60,8 @@ public class LBBlocks extends PluginListener {
 		IBlock bPlaced;
 		if(etc.getDataSource().getItem(blockPlaced.getType()).equalsIgnoreCase("sign") ) {
 			bPlaced = new SignBlock();
-			bPlaced.setWorld(getWorldId(blockPlaced.getWorld()));
+			bPlaced.setDimension(blockPlaced.getWorld().getType().getId());
+			bPlaced.setWorld(blockPlaced.getWorld().getName().replace("worlds/", ""));
 			Sign s = (Sign)blockPlaced.getWorld().getComplexBlock(blockPlaced);
 			ArrayList<String> txt = new ArrayList<String>();
 			for(int i=0; i < 4; i++) {
@@ -72,14 +73,15 @@ public class LBBlocks extends PluginListener {
 		else {
 			bPlaced = new WorldBlock(blockPlaced.getType(), 
 					blockPlaced.getData(), 
-					getWorldId(blockPlaced.getWorld()));
+					blockPlaced.getWorld().getType().getId(),
+					blockPlaced.getWorld().getName().replace("worlds/", ""));
 		}
 				
 		Vector v = new Vector(blockPlaced.getX(),
 				blockPlaced.getY(),
 				blockPlaced.getZ());
 		
-		taskManager.queueBlock(player.getName(), lastface, bPlaced, v);		
+		taskManager.queueBlock(player.getName(), lastface, bPlaced, v, player.getWorld().getName().replace("worlds/", ""));		
 //		LogBlock.this.queueBlock(player, LogBlock.this.lastface,
 //				blockPlaced);
 		return false;
@@ -92,7 +94,8 @@ public class LBBlocks extends PluginListener {
 			b = new SignBlock();
 			b.setData((byte)block.getData());
 			b.setType(63);
-			b.setWorld(getWorldId(block.getWorld()));
+			b.setDimension(block.getWorld().getType().getId());
+			b.setWorld(block.getWorld().getName().replace("worlds/", ""));
 			Sign s = (Sign)block.getWorld().getComplexBlock(block);
 			ArrayList<String> txt = new ArrayList<String>();
 			for(int i=0; i < 4; i++) {
@@ -103,13 +106,13 @@ public class LBBlocks extends PluginListener {
 		else {
 			b = new WorldBlock(block.getType(), 
 					block.getData(), 
-					getWorldId(block.getWorld()));
+					block.getWorld().getType().getId(),
+					block.getWorld().getName().replace("worlds/", ""));
 		}
-		
 		Vector v = new Vector(block.getX(),
 				block.getY(),
 				block.getZ());
-		taskManager.queueBlock(player.getName(), b, null, v);
+		taskManager.queueBlock(player.getName(), b, null, v, player.getWorld().getName().replace("worlds/", ""));
 		//queueBlock(player, block, null);
 		return false;
 	}
@@ -117,7 +120,7 @@ public class LBBlocks extends PluginListener {
 	@Override
 	public boolean onSignChange(Player player, Sign sign) {
 		SignBlock b = new SignBlock();
-		b.setWorld(getWorldId(sign.getWorld()));
+		b.setDimension(sign.getWorld().getType().getId());
 		ArrayList<String> txt = new ArrayList<String>();
 		for(int i=0; i < 4; i++) {
 			txt.add(sign.getText(i));
@@ -126,7 +129,7 @@ public class LBBlocks extends PluginListener {
 		Vector v = new Vector(sign.getX(),
 				sign.getY(),
 				sign.getZ());
-		taskManager.queueBlock(player.getName(), null, b, v);
+		taskManager.queueBlock(player.getName(), null, b, v, player.getWorld().getName().replace("worlds/", ""));
 		
 		//lock.this.queueSign(player, sign);
 		return false;
@@ -136,14 +139,15 @@ public class LBBlocks extends PluginListener {
 		if (item.getItemId() == cfg.getToolId() && player.canUseCommand("/blockhistory")) {
 			taskManager.getBlockHistory(new PlayerWrapper(player, Logger.getLogger("Minecraft")), 
 					new Vector(blockClicked.getX(), blockClicked.getY(), blockClicked.getZ()), 
-					getWorldId(blockClicked.getWorld()), 
+					blockClicked.getWorld().getType().getId(), 
+					blockClicked.getWorld().getName().replace("worlds/", ""),
 					cfg.getQueryLimit());
 			//showBlockHistory(player, blockClicked);
 			return true;
 		}
 
 		Block facing = blockClicked.getFace(blockClicked.getFaceClicked());
-		lastface = new WorldBlock(facing.getType(), facing.getData(), getWorldId(facing.getWorld()));
+		lastface = new WorldBlock(facing.getType(), facing.getData(), facing.getWorld().getType().getId(), facing.getWorld().getName().replace("worlds/", ""));
 		
 		if (cfg.isDebug()) {
 			Logger.getLogger("Minecraft").info("onBlockRightClick: clicked "
@@ -167,16 +171,18 @@ public class LBBlocks extends PluginListener {
 		if(blockPlaced != null) {
 			IBlock b = new WorldBlock(blockPlaced.getType(), 
 					blockPlaced.getData(), 
-					getWorldId(blockPlaced.getWorld()));
+					blockPlaced.getWorld().getType().getId(),
+					blockPlaced.getWorld().getName().replace("worlds/", ""));
 			Vector v = new Vector(blockPlaced.getX(), blockPlaced.getY(), blockPlaced.getZ());
-			taskManager.queueBlock(player.getName(), b, lastface, v);
+			taskManager.queueBlock(player.getName(), b, lastface, v, player.getWorld().getName().replace("worlds/", ""));
 		}
 		if(blockClicked != null) {
 			IBlock b = new WorldBlock(blockClicked.getType(), 
 					blockClicked.getData(), 
-					getWorldId(blockClicked.getWorld()));
+					blockClicked.getWorld().getType().getId(),
+					blockClicked.getWorld().getName().replace("worlds/", ""));
 			Vector v = new Vector(blockClicked.getX(), blockClicked.getY(), blockClicked.getZ());
-			taskManager.queueBlock(player.getName(), b, lastface, v);
+			taskManager.queueBlock(player.getName(), b, lastface, v, player.getWorld().getName().replace("worlds/", ""));
 		}
 		if (cfg.isDebug()) {
 			Logger.getLogger("Minecraft").info("onItemUse: placed "

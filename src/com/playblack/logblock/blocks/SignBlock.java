@@ -7,16 +7,18 @@ public class SignBlock implements IBlock {
 	private ArrayList<String> text = new ArrayList<String>(4);
 	private byte data = 0;
 	private int type = 63;
-	private int world;
+	private int dimension;
+	private String world;
 	
 	public SignBlock() {
 		
 	}
 	
-	public SignBlock(int type, byte data, int world, ArrayList<String> sign) {
+	public SignBlock(int type, byte data, int dimension, String world, ArrayList<String> sign) {
 		this.type = type;
 		this.data = data;
 		this.world = world;
+		this.dimension = dimension;
 		text = sign;
 	}
 	/**
@@ -77,14 +79,24 @@ public class SignBlock implements IBlock {
 	}
 
 	@Override
-	public int getWorld() {
+	public String getWorld() {
 		return world;
 	}
 
 	@Override
-	public void setWorld(int world) {
+	public void setWorld(String world) {
 		this.world = world;
 		
+	}
+
+	@Override
+	public int getDimension() {
+		return dimension;
+	}
+
+	@Override
+	public void setDimension(int dim) {
+		this.dimension = dim;
 	}
 
 }

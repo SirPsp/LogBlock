@@ -54,9 +54,9 @@ public class MysqlData implements IDataSource {
 	}
 
 	@Override
-	public void areaBlockSearch(PlayerWrapper player, int size, int world, IBlock block) {
+	public void areaBlockSearch(PlayerWrapper player, int size, int dimension, String world, IBlock block) {
 		try {
-			threadPool.execute(new AreaBlockSearch(player, size, world, block, connectionPool.getConnection(), itemManager, log));
+			threadPool.execute(new AreaBlockSearch(player, size, dimension, world, block, connectionPool.getConnection(), itemManager, log));
 		} 
 		catch (SQLException e) {
 			log.warning("LogBlock cannot execute Task: AreaBlockSearch -  "+e.getMessage());
@@ -72,9 +72,9 @@ public class MysqlData implements IDataSource {
 	}
 
 	@Override
-	public void areaStats(PlayerWrapper player, int size, int world) {
+	public void areaStats(PlayerWrapper player, int size, int dimension, String world) {
 		try {
-			threadPool.execute(new AreaStats(player, size, world, connectionPool.getConnection()));
+			threadPool.execute(new AreaStats(player, size, dimension, world, connectionPool.getConnection()));
 		} 
 		catch (SQLException e) {
 			log.warning("LogBlock cannot execute Task: AreaStats -  "+e.getMessage());
@@ -91,10 +91,10 @@ public class MysqlData implements IDataSource {
 	}
 
 	@Override
-	public void areaPlayerStats(int size, int world, PlayerWrapper player, String playerName) {
+	public void areaPlayerStats(int size, int dimension, String world, PlayerWrapper player, String playerName) {
 		
 		try {
-			threadPool.execute(new AreaPlayerStats(connectionPool.getConnection(), player, playerName, size, itemManager, log, world));
+			threadPool.execute(new AreaPlayerStats(connectionPool.getConnection(), player, playerName, size, itemManager, log, dimension, world));
 		} 
 		catch (SQLException e) {
 			log.warning("LogBlock cannot execute Task: AreaPlayerStats -  "+e.getMessage());
@@ -111,9 +111,9 @@ public class MysqlData implements IDataSource {
 	}
 
 	@Override
-	public void worldBlockStats(int world, PlayerWrapper player) {
+	public void worldBlockStats(int dimension, String world, PlayerWrapper player) {
 		try {
-			threadPool.execute(new WorldBlockStats(player, connectionPool.getConnection(), log, world));
+			threadPool.execute(new WorldBlockStats(player, connectionPool.getConnection(), log, dimension, world));
 		} 
 		catch (SQLException e) {
 			log.warning("LogBlock cannot execute Task: WorldBlockStats -  "+e.getMessage());
@@ -130,9 +130,9 @@ public class MysqlData implements IDataSource {
 	}
 
 	@Override
-	public void getBlockHistory(PlayerWrapper player, Vector v, int world, int limit) {
+	public void getBlockHistory(PlayerWrapper player, Vector v, int dimension, String world, int limit) {
 		try {
-			threadPool.execute(new BlockHistory(player, connectionPool.getConnection(), log, world, v, itemManager));
+			threadPool.execute(new BlockHistory(player, connectionPool.getConnection(), log, dimension, world, v, itemManager));
 		} 
 		catch (SQLException e) {
 			log.warning("LogBlock cannot execute Task: BlockHistory -  "+e.getMessage());
@@ -160,12 +160,12 @@ public class MysqlData implements IDataSource {
 	}
 	
 	@Override
-	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock, Vector position) {
+	public void queueBlock(String player, IBlock oldBlock, IBlock newBlock, Vector position, String world) {
 		if(oldBlock == null) {
-			oldBlock = new WorldBlock(0,0,0);
+			oldBlock = new WorldBlock(0,0,0,world);
 		}
 		if(newBlock == null) {
-			newBlock = new WorldBlock(0,0,0);
+			newBlock = new WorldBlock(0,0,0,world);
 		}
 
 		BlockEntry be = new BlockEntry(player, newBlock, oldBlock, position);

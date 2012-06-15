@@ -15,11 +15,12 @@ import com.playblack.mcutils.PlayerWrapper;
 
 public class WorldBlockStats extends ExecutionTask {
 
-	public WorldBlockStats(PlayerWrapper p, Connection conn, Logger log, int world) {
+	public WorldBlockStats(PlayerWrapper p, Connection conn, Logger log, int dimension, String world) {
 		this.conn = conn;
 		this.player = p;
 		this.log = log;
 		this.world = world;
+		this.dimension = dimension;
 		
 	}
 	@Override
@@ -33,8 +34,9 @@ public class WorldBlockStats extends ExecutionTask {
 	    try
 	    {
 	      this.conn.setAutoCommit(false);
-	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where type > 0 AND world = ? group by player order by count(player) desc limit 5", 1);
-	      ps.setInt(1, this.world);
+	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where type > 0 AND dimension = ? AND world = ? group by player order by count(player) desc limit 5", 1);
+	      ps.setInt(1, this.dimension);
+	      ps.setString(2, this.world);
 	      rs = ps.executeQuery();
 	      while (rs.next())
 	      {
@@ -44,8 +46,9 @@ public class WorldBlockStats extends ExecutionTask {
 	      rs.close();
 	      ps.close();
 
-	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where replaced > 0 AND world = ? group by player order by count(player) desc limit 5", 1);
-	      ps.setInt(1, this.world);
+	      ps = this.conn.prepareStatement("SELECT player, count(player) as num from blocks where replaced > 0 AND dimension = ? AND world = ? group by player order by count(player) desc limit 5", 1);
+	      ps.setInt(1, this.dimension);
+	      ps.setString(2, this.world);
 	      rs = ps.executeQuery();
 	      while (rs.next())
 	      {

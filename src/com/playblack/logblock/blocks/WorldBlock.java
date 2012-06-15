@@ -4,11 +4,13 @@ public class WorldBlock implements IBlock {
 
 	private byte data=0;
 	private int type=0;
-	private int world=0; //default
-	public WorldBlock(int type, int data, int world) {
+	private String world;
+	private int dimension=0; //default
+	public WorldBlock(int type, int data, int dimension, String world) {
 		this.type = type;
 		this.data = (byte)data;
 		this.world = world;
+		this.dimension = dimension;
 	}
 	
 	public WorldBlock(int type, int data) {
@@ -39,12 +41,12 @@ public class WorldBlock implements IBlock {
 	}
 
 	@Override
-	public int getWorld() {
+	public String getWorld() {
 		return world;
 	}
 
 	@Override
-	public void setWorld(int world) {
+	public void setWorld(String world) {
 		this.world = world;
 	}
 	
@@ -54,6 +56,15 @@ public class WorldBlock implements IBlock {
     			", World: "+world+"\n"+
     			"===================================\n";
 	}
-    
+
+	@Override
+	public int getDimension() {
+		return dimension;
+	}
+
+	@Override
+	public void setDimension(int dim) {
+		this.dimension = dim;
+	}
 
 }

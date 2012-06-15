@@ -18,12 +18,13 @@ import com.playblack.mcutils.Vector;
 
 public class BlockHistory extends ExecutionTask {
 
-	public BlockHistory(PlayerWrapper p, Connection conn, Logger log, int world, Vector v, ItemManager im) {
+	public BlockHistory(PlayerWrapper p, Connection conn, Logger log, int dimension, String world, Vector v, ItemManager im) {
 		this.player = p;
 		this.conn = conn;
 		this.location = v;
 		this.log = log;
 		this.world = world;
+		this.dimension = dimension;
 		this.itemManager = im;
 	}
 	@Override
@@ -36,11 +37,12 @@ public class BlockHistory extends ExecutionTask {
 		SimpleDateFormat formatter = new SimpleDateFormat(LogBlockConfig.getDateFormat());
 		try {
 			conn.setAutoCommit(false);
-			ps = conn.prepareStatement("SELECT * from blocks left join extra using (id) where y = ? and x = ? and z = ?  and world = ? order by date desc limit 10", 1);
+			ps = conn.prepareStatement("SELECT * from blocks left join extra using (id) where y = ? and x = ? and z = ?  and dimension = ? AND world = ? order by date desc limit 10", 1);
 			ps.setInt(1, location.getBlockY());
 			ps.setInt(2, location.getBlockX());
 			ps.setInt(3, location.getBlockZ());
-			ps.setInt(4, this.world);
+			ps.setInt(4, this.dimension);
+			ps.setString(5, this.world);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Timestamp date = rs.getTimestamp("date");
